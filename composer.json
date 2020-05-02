@@ -1,0 +1,43 @@
+{
+    "name": "majframe/routing",
+    "description": "Majframe package for routing.",
+    "type": "library",
+    "minimum-stability": "stable",
+    "license": "GPL-3.0-only",
+    "authors": [
+        {
+            "name": "Ondřej Maxa",
+            "homepage": "http://ondrej.maxa.expert",
+            "email": "ondrej@maxa.expert"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Majframe\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Majframe\\": "tests/unit/"
+        }
+    },
+    "require": {
+        "php": "^7.4"
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-master",
+        "codeception/codeception": "^4.1",
+        "codeception/module-phpbrowser": "^1.0.0",
+        "codeception/module-asserts": "^1.0.0"
+    },
+    "scripts": {
+        "codecept": "codecept run",
+        "codecept-steps": "@codecept --steps"
+    },
+    "config": {
+        "platform": {
+            "php": "7.4"
+        },
+        "sort-packages": true
+    }
+}
