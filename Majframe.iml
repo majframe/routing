@@ -7,6 +7,10 @@
       <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" packagePrefix="Majframe\" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/doctrine/annotations" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/doctrine/lexer" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/haydenpierce/class-finder" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/majframe/utils" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
