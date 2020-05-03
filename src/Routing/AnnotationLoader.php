@@ -16,8 +16,11 @@
 namespace Majframe\Routing;
 
 
+use DI\Annotation\Inject;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\Common\Annotations\CachedReader;
+use Doctrine\Common\Cache\PhpFileCache;
 use Exception;
 use HaydenPierce\ClassFinder\ClassFinder;
 use InvalidArgumentException;
@@ -37,9 +40,9 @@ use RuntimeException;
 class AnnotationLoader
 {
     /**
-     * @var AnnotationReader $reader
+     * @var CachedReader $reader
      */
-    protected AnnotationReader $reader;
+    protected CachedReader $reader;
     /**
      * @var ControllerCollection $controllers
      */
@@ -52,15 +55,31 @@ class AnnotationLoader
      * @var bool $loaded
      */
     protected bool $loaded = false;
+    /**
+     * @var bool $devMode
+     */
+    protected bool $devMode;
+    /**
+     * @var bool $cacheDir
+     */
+    protected bool $cacheDir;
 
     /**
      * AnnotationLoader constructor.
+     * @Inject({"application"})
+     * @param array $application
      */
-    public function __construct()
+    public function __construct(array $application)
     {
         AnnotationRegistry::registerLoader('class_exists');
-        $this->reader = new AnnotationReader;
+        $this->cacheDir = $application['cacheDir'];
+        $this->devMode = $application['devMode'];
         $this->controllers = new ControllerCollection;
+        $this->reader = new CachedReader(
+            new AnnotationReader,
+            new PhpFileCache($this->cacheDir.'/routing/annotation'),
+            $this->devMode
+        );
     }
 
     /**
