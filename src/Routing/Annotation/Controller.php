@@ -16,10 +16,13 @@
 namespace Majframe\Routing\Annotation;
 
 
+use Doctrine\Common\Annotations\Annotation\Target;
+
 /**
  * Class Controller
  * @package Majframe\Routing\Annotation
  * @Annotation
+ * @Target("CLASS")
  */
 class Controller
 {
