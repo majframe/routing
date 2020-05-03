@@ -16,8 +16,6 @@
 namespace Majframe\Routing\Reference;
 
 
-use Majframe\Routing\Collection\HttpMethodCollection;
-
 class MethodReference
 {
     /**
@@ -29,9 +27,9 @@ class MethodReference
      */
     public string $path;
     /**
-     * @var HttpMethodCollection $methods
+     * @var array $methods
      */
-    public HttpMethodCollection $methods;
+    public array $methods;
 
     /**
      * MethodReference constructor.
@@ -41,8 +39,8 @@ class MethodReference
      */
     public function __construct(string $name, string $path, array $methods)
     {
-        $this->methods = new HttpMethodCollection($methods);
         $this->name = $name;
         $this->path = $path;
+        $this->methods = $methods;
     }
 }

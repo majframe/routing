@@ -16,10 +16,14 @@
 namespace Majframe\Routing\Annotation;
 
 
+use Doctrine\Common\Annotations\Annotation\Enum;
+use Doctrine\Common\Annotations\Annotation\Target;
+
 /**
  * Class Route
  * @package Majframe\Routing\Annotation
  * @Annotation
+ * @Target("METHOD")
  */
 class Route
 {
@@ -29,6 +33,7 @@ class Route
     public string $path;
     /**
      * @var array $methods
+     * @Enum({"GET","POST","PUT","DELETE","HEAD","PATCH"})
      */
     public array $methods;
 

@@ -20,6 +20,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Exception;
 use HaydenPierce\ClassFinder\ClassFinder;
+use InvalidArgumentException;
 use Majframe\Routing\Annotation\Controller;
 use Majframe\Routing\Annotation\Route;
 use Majframe\Routing\Collection\ControllerCollection;
@@ -27,6 +28,7 @@ use Majframe\Routing\Reference\ControllerReference;
 use Majframe\Routing\Reference\MethodReference;
 use ReflectionClass;
 use ReflectionException;
+use RuntimeException;
 
 /**
  * Class AnnotationLoader
@@ -37,11 +39,19 @@ class AnnotationLoader
     /**
      * @var AnnotationReader $reader
      */
-    private AnnotationReader $reader;
+    protected AnnotationReader $reader;
     /**
      * @var ControllerCollection $controllers
      */
-    private ControllerCollection $controllers;
+    protected ControllerCollection $controllers;
+    /**
+     * @var array $classes
+     */
+    protected array $classes = [];
+    /**
+     * @var bool $loaded
+     */
+    protected bool $loaded = false;
 
     /**
      * AnnotationLoader constructor.
@@ -54,36 +64,62 @@ class AnnotationLoader
     }
 
     /**
+     * @return array
+     */
+    public function getClasses(): array
+    {
+        return $this->classes;
+    }
+
+    /**
+     * @throws RuntimeException
+     * @return ControllerCollection
+     */
+    public function getControllers(): ControllerCollection
+    {
+        if(!$this->loaded) {
+            throw new RuntimeException("Controllers have not been loaded yet.");
+        }
+        return $this->controllers;
+    }
+
+    /**
      * @param string $namespace
-     * @throws ReflectionException
-     * @throws Exception
+     * @throws InvalidArgumentException|Exception
      */
     public function addNamespace(string $namespace): void
     {
-        $classes = ClassFinder::getClassesInNamespace($namespace, ClassFinder::RECURSIVE_MODE);
-        foreach ($classes as $class) {
+        if(!ClassFinder::namespaceHasClasses($namespace)) {
+            throw new InvalidArgumentException("Namespace $namespace has no classes.");
+        }
+        $this->loaded = false;
+        $this->classes = array_merge($this->classes, ClassFinder::getClassesInNamespace($namespace, ClassFinder::RECURSIVE_MODE));
+    }
+
+    /**
+     * @return void
+     * @throws ReflectionException
+     */
+    public function load(): void
+    {
+        if($this->loaded) {
+            throw new RuntimeException("Controllers have been already loaded.");
+        }
+        foreach ($this->classes as $class) {
             $annotation = $this->reader->getClassAnnotation(new ReflectionClass($class), Controller::class);
             if (!is_null($annotation)) {
                 $this->controllers->add(new ControllerReference($class, $annotation->prefix));
             }
         }
-    }
-
-    /**
-     * @return ControllerCollection
-     * @throws ReflectionException
-     */
-    public function load(): ControllerCollection
-    {
         foreach ($this->controllers as $controller) {
             $methods = (new ReflectionClass($controller->name))->getMethods();
             foreach ($methods as $method) {
-                $annotation = $this->reader->getMethodAnnotation($method,Route::class);
+                $annotation = $this->reader->getMethodAnnotation($method, Route::class);
                 if (!is_null($annotation)) {
                     $controller->methods->add(new MethodReference($method->name, $annotation->path, $annotation->methods));
                 }
             }
         }
-        return $this->controllers;
+        $this->loaded = true;
     }
 }

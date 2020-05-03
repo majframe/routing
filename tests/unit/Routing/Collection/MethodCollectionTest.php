@@ -24,11 +24,11 @@ class MethodCollectionTest extends Unit
     public function testAdd(): void
     {
         $collection = new MethodCollection;
-        $method = new MethodReference('method', 'path', [HttpMethodCollection::POST]);
+        $method = new MethodReference('method', 'path', ["POST"]);
         $collection->add($method);
         $this->assertEquals($method, $collection->get(0));
         $this->assertEquals('method', $collection->get(0)->name);
         $this->assertEquals('path', $collection->get(0)->path);
-        $this->assertEquals([HttpMethodCollection::POST], $collection->get(0)->methods->asArray());
+        $this->assertEquals(["POST"], $collection->get(0)->methods);
     }
 }
